@@ -4,7 +4,7 @@ from collections import deque
 from typing import Callable, Dict, List, Type
 from abc import ABC, abstractmethod
 from ising.base import IsingModel
-from lattice import adjacency_list
+from .lattice import adjacency_list
 
 import logging
 logger = logging.getLogger(__name__)

@@ -5,9 +5,9 @@ from typing import Callable, Dict, List, Type
 from abc import ABC, abstractmethod
 from data.trajectory import EnsembleIsingTrajectory
 from data.generic import Summary
-from ising.observables import Energy, Magnetization
+from ising.observables import Demixed
 from slurmflow.serializer import ObjectSerializer
-from lattice import adjacency_list
+from .lattice import adjacency_list
 
 
 import logging
