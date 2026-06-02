@@ -160,9 +160,9 @@ class EnsembleIsingTrajectory(EnsembleTrajectory):
         # The time series of the 2D ising model has shape (num_frames, size, size)
         if coordinates is not None:
             coordinates = np.array(coordinates)
-            if len(coordinates.shape) == 3:
+            if len(coordinates.shape) == 2:
                 self.coordinates = coordinates
-            elif len(coordinates.shape) == 2:
+            elif len(coordinates.shape) == 1:
                 self.coordinates = coordinates.reshape((1, *coordinates.shape))
 
     def add_frame(self, frame: np.ndarray):
@@ -174,11 +174,11 @@ class EnsembleIsingTrajectory(EnsembleTrajectory):
         """
         frame = np.array(frame)
 
-        # The frame should have shape (size, size) or (n_frames, size, size)
-        if len(frame.shape) == 3:
-            frame = frame
+        # The frame should have shape (size,) or (n_frames, size)
+        if len(frame.shape) == 1:
+            frame = frame.reshape((1, *frame.shape))
         elif len(frame.shape) == 2:
-            frame = frame.reshape((1, *frame.shape)) 
+            frame = frame
         logger.debug(f"Adding frame of shape {frame.shape} to trajectory.")
 
         if self.coordinates is None:

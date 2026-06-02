@@ -26,21 +26,23 @@ class Demixed(Observable):
         super().__init__("demixed")
 
 
-    def evaluate_frame(self, frame: np.ndarray) -> float:
+    def evaluate_frame(self, lattice: np.ndarray) -> float:
         """
         Calculate the demixed parameter of a lattice.
 
         Args:
-            frame (np.ndarray): The frame of the lattice.
+            lattice (np.ndarray): The lattice of spins.
 
         Returns:
             float: The demixed parameter of the lattice.
         """
+        M = 2
+        frame = lattice.tolist()
 
         density = sum(n != 0 for n in frame) / len(frame)
 
         total = 0 + 0j
-        M = self.M
+
         for i in range(1, M + 1):
             angle = 2 * np.pi * (i - 1) / M
             euler = np.exp(-1j * angle)

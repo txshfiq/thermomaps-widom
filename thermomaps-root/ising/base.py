@@ -68,8 +68,6 @@ class IsingModel:
             size (int): The size of the lattice.
             warmup (int): The number of warm-up steps.
             temp (float): The temperature of the system.
-            Jx (float, optional): The interaction energy along the x direction. Defaults to 1.0.
-            Jy (float, optional): The interaction energy along the y direction. Defaults to 1.0.
         """
         self.size = size
         self.lattice = lattice_init(z, size, M, "square")
@@ -99,12 +97,9 @@ class IsingModel:
 
         logger.debug(f"Finished warm-up steps.")
 
-        nodes_size = len(self.lattice)
-
         # Perform the simulation steps
         for i in range(steps):
-            for _ in range(nodes_size):
-                self.lattice = self.update()
+            self.lattice = self.update()
 
             # Sample the state of the system and the observables
             if i % sampling_frequency == 0:
