@@ -99,13 +99,16 @@ class IsingModel:
 
         logger.debug(f"Finished warm-up steps.")
 
+        nodes_size = len(self.lattice)
+
         # Perform the simulation steps
         for i in range(steps):
-            self.lattice = self.update()
+            for _ in range(nodes_size):
+                self.lattice = self.update()
 
             # Sample the state of the system and the observables
             if i % sampling_frequency == 0:
-                logger.debug(f"Adding frame {i} (shape = {self.lattice.shape}) to the trajectory.")
+                logger.debug(f"Adding frame {i} (nodes = {len(self.lattice)}) to the trajectory.")
                 self.trajectory.add_frame(self.lattice)
 
         # Compute the observables and add them to the trajectory
