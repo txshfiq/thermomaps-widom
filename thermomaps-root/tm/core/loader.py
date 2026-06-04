@@ -47,10 +47,17 @@ class NormalTransform(Transform):
             torch.Tensor: Standardized data.
         """
         try:
-            (_, nc, _, _) = x.shape
-            return (x - self.mean[:nc, :, :]) / (self.std[:nc, :, :])
+            if len(x.shape) == 4:
+                (_, nc, _, _) = x.shape
+                return (x - self.mean[:nc, :, :]) / (self.std[:nc, :, :])
+            elif len(x.shape) == 3:
+                (_, nc, _) = x.shape
+                return (x - self.mean[:nc, :]) / (self.std[:nc, :])
         except:
-            return (x - self.mean[-1, :, :]) / (self.std[-1, :, :])
+            if len(x.shape) == 4:
+                return (x - self.mean[-1, :, :]) / (self.std[-1, :, :])
+            elif len(x.shape) == 3:
+                return (x - self.mean[-1, :]) / (self.std[-1, :])
 
     def reverse(self, x):
         """
@@ -63,10 +70,17 @@ class NormalTransform(Transform):
             torch.Tensor: Original-scale data.
         """
         try:
-            (_, nc, _, _) = x.shape
-            return x * (self.std[:nc, :, :]) + self.mean[:nc, :, :]
+            if len(x.shape) == 4:
+                (_, nc, _, _) = x.shape
+                return x * (self.std[:nc, :, :]) + self.mean[:nc, :, :]
+            elif len(x.shape) == 3:
+                (_, nc, _) = x.shape
+                return x * (self.std[:nc, :]) + self.mean[:nc, :]
         except:
-            return x * (self.std[-1, :, :]) + self.mean[-1, :, :]
+            if len(x.shape) == 4:
+                return x * (self.std[-1, :, :]) + self.mean[-1, :, :]
+            elif len(x.shape) == 3:
+                return x * (self.std[-1, :]) + self.mean[-1, :]
 
 
 class MinMaxTransform(Transform):
