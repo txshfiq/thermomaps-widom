@@ -2,7 +2,7 @@ import os
 import numpy as np
 from data.observables import Observable
 from data.generic import DataFormat, Summary
-from typing import List, Optional, Dict, Union, Iterable
+from typing import Callable, List, Optional, Dict, Union, Iterable
 import collections
 
 import logging
@@ -25,6 +25,7 @@ class Trajectory(DataFormat):
         self.summary = summary
         self.observables = {}
         self.coordinates = coordinates
+        self._original_coordinates = None
 
 
     def add_observable(self, observables: Union[Observable, List[Observable]]):
@@ -39,6 +40,19 @@ class Trajectory(DataFormat):
 
         for observable in observables:
             self.observables[observable.name] = observable
+
+    def transform_frames(self):
+        '''
+        Transform the frames of the trajectory to have a channel dimension if they do not already have one.
+        This is necessary for compatibility with convolutional neural networks, which expect input data to have a channel dimension.
+        '''
+
+
+        if self.coordinates is None:
+            raise ValueError("No coordinates available to transform.")
+
+        self.coordinates = np.array([c.reshape(self.summary.size, self.summary.size) for c in self.coordinates])
+
 
     def __getitem__(self, index: Union[int, slice, Iterable[int]]):
         """

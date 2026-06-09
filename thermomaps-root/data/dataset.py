@@ -97,11 +97,21 @@ class MultiEnsembleDataset:
         new_dataset = MultiEnsembleDataset(trajectories, summary=self.summary)
         return new_dataset
 
-    def get_loader_args(self, state_variables: List[str]) -> Dict[str, List]:
+    def get_loader_args(self, state_variables: List[str], reshape_lat: bool = True) -> Dict[str, List]:
         complete_dataset, paired_state_vars = [], []
+
         for trajectory in self.trajectories:
             state_var_chs = []
             state_var_vector = []
+
+            if reshape_lat == True:
+                trajectory.transform_frames()
+            else:
+                raise ValueError(
+                    "reshape_lat=False is not supported by toTM_loader(); "
+                    "set reshape_lat=True or add the appropriate coordinate reshape logic."
+                )
+
             if len(trajectory.coordinates.shape) == 3: # No channel dim
                 coord_ch = np.expand_dims(trajectory.coordinates, 1)
             else:
@@ -128,7 +138,7 @@ class MultiEnsembleDataset:
             
         return complete_dataset, paired_state_vars, control_dims
 
-    def to_TMLoader(self, train_size: float, test_size: float, state_variables: List[str], **TMLoader_kwargs) -> Loader:
+    def to_TMLoader(self, train_size: float, test_size: float, state_variables: List[str], reshape_lat: bool = True, **TMLoader_kwargs) -> Loader:
         """
         Convert the dataset to a DataLoader.
 
@@ -142,7 +152,7 @@ class MultiEnsembleDataset:
             DataLoader: The DataLoader.
         """
 
-        tm_dataset, paired_state_vars, control_dims = self.get_loader_args(state_variables)
+        tm_dataset, paired_state_vars, control_dims = self.get_loader_args(state_variables, reshape_lat=reshape_lat)
         splitter = ShuffleSplit(n_splits=1, test_size=test_size, train_size=train_size)
         train_idxs, test_idxs = next(splitter.split(tm_dataset))
         train_loader = Loader(data=tm_dataset[train_idxs], temperatures=paired_state_vars[train_idxs], control_dims=control_dims, **TMLoader_kwargs)
